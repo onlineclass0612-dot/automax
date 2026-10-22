@@ -1,0 +1,307 @@
+{
+  "communities": {
+    "0": [
+      "next_config",
+      "next_config_nextconfig",
+      "ref_lucide_react",
+      "ref_next",
+      "ref_react",
+      "src_app_admin_page",
+      "src_app_admin_page_adminpage",
+      "src_app_admin_page_dynamic",
+      "src_app_cars_slug_page",
+      "src_app_cars_slug_page_cardetailpage",
+      "src_app_cars_slug_page_dynamic",
+      "src_app_cars_slug_page_props",
+      "src_app_order_ordernumber_orderactionsclient",
+      "src_app_order_ordernumber_orderactionsclient_orderactionsclient",
+      "src_app_order_ordernumber_page",
+      "src_app_order_ordernumber_page_dynamic",
+      "src_app_order_ordernumber_page_ordertrackingpage",
+      "src_app_order_ordernumber_page_props",
+      "src_app_page",
+      "src_app_page_dynamic",
+      "src_app_page_homepage",
+      "src_components_bookingform",
+      "src_components_bookingform_bookingform",
+      "src_components_carcard",
+      "src_components_carcard_carcard",
+      "src_components_carcard_caritemprops",
+      "src_components_fleetcatalog",
+      "src_components_fleetcatalog_fleetcatalog",
+      "src_components_footer",
+      "src_components_footer_footer",
+      "src_components_herosection",
+      "src_components_herosection_herosection",
+      "src_components_navbar",
+      "src_components_navbar_navbar"
+    ],
+    "1": [
+      "eslint_config",
+      "eslint_config_eslintconfig",
+      "package",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_start",
+      "package_version",
+      "prisma_seed",
+      "prisma_seed_main",
+      "prisma_seed_prisma",
+      "ref_babel_plugin_react_compiler",
+      "ref_clsx",
+      "ref_eslint",
+      "ref_eslint_config_next",
+      "ref_prisma",
+      "ref_prisma_client",
+      "ref_react_dom",
+      "ref_tailwind_merge",
+      "ref_tailwindcss",
+      "ref_tailwindcss_turbopack",
+      "ref_types_node",
+      "ref_types_react",
+      "ref_types_react_dom",
+      "ref_typescript"
+    ],
+    "2": [
+      "ref_crypto",
+      "src_app_api_payment_mayar_webhook_route",
+      "src_app_api_payment_mayar_webhook_route_post",
+      "src_app_api_payment_simulate_confirm_route",
+      "src_app_api_payment_simulate_confirm_route_post",
+      "src_lib_prisma",
+      "src_lib_prisma_globalforprisma",
+      "src_lib_prisma_prisma",
+      "src_services_notificationservice",
+      "src_services_notificationservice_channels",
+      "src_services_notificationservice_dispatchnotification",
+      "src_services_notificationservice_notificationchannel",
+      "src_services_notificationservice_notificationchannel_isenabled",
+      "src_services_notificationservice_notificationchannel_send",
+      "src_services_notificationservice_notificationpayload",
+      "src_services_notificationservice_telegramnotificationchannel",
+      "src_services_notificationservice_telegramnotificationchannel_isenabled",
+      "src_services_notificationservice_telegramnotificationchannel_send",
+      "src_services_notificationservice_whatsapphelperchannel",
+      "src_services_notificationservice_whatsapphelperchannel_isenabled",
+      "src_services_notificationservice_whatsapphelperchannel_send",
+      "src_services_paymentledgerservice",
+      "src_services_paymentledgerservice_paymentprocessresult",
+      "src_services_paymentledgerservice_processpaymentparams",
+      "src_services_paymentledgerservice_recordbookingpayment"
+    ],
+    "3": [
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "4": [
+      "src_app_actions_bookingactions",
+      "src_app_actions_bookingactions_submitbookingaction",
+      "src_lib_pricing",
+      "src_lib_pricing_calculatedurationdays",
+      "src_lib_pricing_calculatepricingbreakdown",
+      "src_lib_pricing_pricing_constants",
+      "src_lib_pricing_pricingbreakdownresult",
+      "src_lib_pricing_pricingcalculationinput",
+      "src_services_bookingservice",
+      "src_services_bookingservice_bookingcalculationinput",
+      "src_services_bookingservice_calculatebookingcost",
+      "src_services_bookingservice_createbookinginput",
+      "src_services_bookingservice_createnewbooking",
+      "src_services_bookingservice_generateordernumber",
+      "src_services_mayarservice",
+      "src_services_mayarservice_createmayarpayment",
+      "src_services_mayarservice_createpaymentparams",
+      "src_services_mayarservice_mayarpaymentresult"
+    ],
+    "5": [
+      "package_devdependencies",
+      "package_devdependencies_babel_plugin_react_compiler",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_prisma",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_turbopack",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript"
+    ],
+    "6": [
+      "src_app_actions_adminactions",
+      "src_app_actions_adminactions_addnewcaraction",
+      "src_app_actions_adminactions_adminloginaction",
+      "src_app_actions_adminactions_adminlogoutaction",
+      "src_app_actions_adminactions_updatebookingstatusaction",
+      "src_app_actions_adminactions_updatecarstatusaction",
+      "src_app_actions_adminactions_updatesettingsaction",
+      "src_app_actions_adminactions_verifyadminpermission",
+      "src_components_admin_admindashboardclient",
+      "src_components_admin_admindashboardclient_admindashboardclient",
+      "src_components_admin_admindashboardclient_props"
+    ],
+    "7": [
+      "package_dependencies",
+      "package_dependencies_clsx",
+      "package_dependencies_lucide_react",
+      "package_dependencies_next",
+      "package_dependencies_prisma_client",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_tailwind_merge"
+    ],
+    "8": [
+      "src_app_globals",
+      "src_app_layout",
+      "src_app_layout_geistmono",
+      "src_app_layout_geistsans",
+      "src_app_layout_metadata",
+      "src_app_layout_rootlayout",
+      "src_app_layout_viewport"
+    ]
+  },
+  "cohesion": {
+    "0": 0.16042780748663102,
+    "1": 0.07407407407407407,
+    "2": 0.12333333333333334,
+    "3": 0.10526315789473684,
+    "4": 0.16993464052287582,
+    "5": 0.18181818181818182,
+    "6": 0.4,
+    "7": 0.25,
+    "8": 0.2857142857142857
+  },
+  "gods": [
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "ref_next",
+      "label": "next",
+      "degree": 15
+    },
+    {
+      "id": "ref_react",
+      "label": "react",
+      "degree": 13
+    },
+    {
+      "id": "ref_lucide_react",
+      "label": "lucide-react",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_prisma_prisma",
+      "label": "prisma",
+      "degree": 10
+    },
+    {
+      "id": "src_components_footer_footer",
+      "label": "Footer()",
+      "degree": 9
+    },
+    {
+      "id": "src_components_navbar_navbar",
+      "label": "Navbar()",
+      "degree": 9
+    },
+    {
+      "id": "src_components_admin_admindashboardclient_admindashboardclient",
+      "label": "AdminDashboardClient()",
+      "degree": 7
+    },
+    {
+      "id": "src_services_bookingservice_createnewbooking",
+      "label": "createNewBooking()",
+      "degree": 7
+    },
+    {
+      "id": "src_lib_pricing_calculatepricingbreakdown",
+      "label": "calculatePricingBreakdown()",
+      "degree": 6
+    }
+  ],
+  "surprises": [
+    {
+      "source": "AdminPage()",
+      "target": "AdminDashboardClient()",
+      "source_files": [
+        "src/app/admin/page.tsx",
+        "src/components/admin/AdminDashboardClient.tsx"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BookingForm()",
+      "target": "submitBookingAction()",
+      "source_files": [
+        "src/components/BookingForm.tsx",
+        "src/app/actions/bookingActions.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "POST()",
+      "target": "recordBookingPayment()",
+      "source_files": [
+        "src/app/api/payment/mayar-webhook/route.ts",
+        "src/services/paymentLedgerService.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `POST()` unexpectedly reaches hub `recordBookingPayment()`"
+    },
+    {
+      "source": "POST()",
+      "target": "recordBookingPayment()",
+      "source_files": [
+        "src/app/api/payment/simulate-confirm/route.ts",
+        "src/services/paymentLedgerService.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `POST()` unexpectedly reaches hub `recordBookingPayment()`"
+    },
+    {
+      "source": "BookingForm()",
+      "target": "calculatePricingBreakdown()",
+      "source_files": [
+        "src/components/BookingForm.tsx",
+        "src/lib/pricing.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}

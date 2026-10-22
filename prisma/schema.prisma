@@ -1,0 +1,111 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Car {
+  id           String    @id @default(cuid())
+  name         String
+  slug         String    @unique
+  brand        String
+  category     String    // "MPV", "SUV", "City Car", "Sedan"
+  plateNumber  String    @unique
+  transmission String    // "AUTOMATIC", "MANUAL"
+  seats        Int
+  luggage      Int
+  fuelType     String    // "Bensin", "Diesel", "Hybrid"
+  dailyRate    Int       // Rupiah per hari
+  imageUrl     String
+  status       String    @default("AVAILABLE") // "AVAILABLE", "RENTED", "MAINTENANCE"
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  bookings     Booking[]
+
+  @@index([status])
+  @@index([category])
+}
+
+model Booking {
+  id                String    @id @default(cuid())
+  orderNumber       String    @unique // Format: "INV-202610-001"
+  carId             String
+  car               Car       @relation(fields: [carId], references: [id], onDelete: Restrict)
+  
+  // Data Penyewa
+  customerName      String
+  customerPhone     String    // Nomor WhatsApp
+  customerEmail     String?
+  customerAddress   String?
+  idCardPhotoUrl    String?   // Foto KTP
+  driverLicPhotoUrl String?   // Foto SIM A
+
+  // Rincian Sewa
+  startDate         DateTime
+  endDate           DateTime
+  durationDays      Int
+  isWithDriver      Boolean   @default(false)
+  driverFeePerDay   Int       @default(0)
+  dailyRateSnap     Int       // Snapshot harga harian saat booking
+
+  // Rincian Biaya & Skema DP
+  totalAmount       Int       // Total keseluruhan biaya sewa
+  depositPercent    Int       @default(30) // Persentase DP (30)
+  depositRequired   Int       // Nominal DP yang harus dibayar (30% * total)
+  paidAmount        Int       @default(0)  // Dana yang sudah masuk
+  remainingAmount   Int       // Sisa tagihan (COD / Bayar di tempat)
+  paymentType       String    @default("DOWN_PAYMENT") // "DOWN_PAYMENT" | "FULL_PAYMENT"
+
+  // Status Transaksi
+  status            String    @default("PENDING_PAYMENT") 
+  // "PENDING_PAYMENT", "DP_PAID", "PAID_IN_FULL", "ACTIVE", "COMPLETED", "CANCELLED"
+  
+  notes             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  payments          Payment[]
+
+  @@index([carId])
+  @@index([status])
+  @@index([startDate, endDate])
+}
+
+model Payment {
+  id             String    @id @default(cuid())
+  bookingId      String
+  booking        Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  gateway        String    @default("MAYAR") // "MAYAR", "CASH_COD", "MANUAL_TRANSFER"
+  transactionId  String?   // ID transaksi dari Mayar
+  paymentUrl     String?   // Link pembayaran Mayar (QRIS / VA)
+  amount         Int
+  method         String?   // "QRIS", "BCA_VA", "MANDIRI_VA", "CASH"
+  status         String    @default("PENDING") // "PENDING", "SUCCESS", "FAILED", "EXPIRED"
+  rawResponse    String?   // JSON log respon Mayar
+  paidAt         DateTime?
+  createdAt      DateTime  @default(now())
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+model Setting {
+  id               String   @id @default("global")
+  rentalName       String   @default("AutoMax Car Rental")
+  adminWhatsApp    String   @default("6281234567890")
+  defaultDpPercent Int      @default(30)
+  poolAddress      String   @default("Pool AutoMax, Jakarta Selatan")
+  updatedAt        DateTime @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // Hashed password
+  name      String
+  createdAt DateTime @default(now())
+}
