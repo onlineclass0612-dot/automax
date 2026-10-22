@@ -2,7 +2,19 @@
 
 import React, { useState, useTransition } from 'react';
 import { CarItemProps } from './CarCard';
-import { Calendar, User, Phone, MapPin, ShieldCheck, CreditCard, Sparkles, AlertCircle } from 'lucide-react';
+import {
+  Calendar,
+  User,
+  Phone,
+  MapPin,
+  ShieldCheck,
+  CreditCard,
+  Sparkles,
+  AlertCircle,
+  Upload,
+  X,
+  CheckCircle2,
+} from 'lucide-react';
 import { submitBookingAction } from '@/app/actions/bookingActions';
 import { calculatePricingBreakdown, PRICING_CONSTANTS } from '@/lib/pricing';
 
@@ -20,6 +32,48 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const [endDate, setEndDate] = useState(nextDay.toISOString().slice(0, 10));
   const [isWithDriver, setIsWithDriver] = useState(false);
   const [paymentType, setPaymentType] = useState<'DOWN_PAYMENT' | 'FULL_PAYMENT'>('DOWN_PAYMENT');
+
+  // Document Upload States & Live Previews
+  const [idCardPreview, setIdCardPreview] = useState<string | null>(null);
+  const [driverLicPreview, setDriverLicPreview] = useState<string | null>(null);
+  const [idCardFileName, setIdCardFileName] = useState<string | null>(null);
+  const [driverLicFileName, setDriverLicFileName] = useState<string | null>(null);
+
+  const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage('Ukuran file KTP melebihi 5MB');
+        return;
+      }
+      setIdCardFileName(file.name);
+      setIdCardPreview(URL.createObjectURL(file));
+      setErrorMessage(null);
+    }
+  };
+
+  const handleDriverLicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage('Ukuran file SIM A melebihi 5MB');
+        return;
+      }
+      setDriverLicFileName(file.name);
+      setDriverLicPreview(URL.createObjectURL(file));
+      setErrorMessage(null);
+    }
+  };
+
+  const removeIdCard = () => {
+    setIdCardPreview(null);
+    setIdCardFileName(null);
+  };
+
+  const removeDriverLic = () => {
+    setDriverLicPreview(null);
+    setDriverLicFileName(null);
+  };
 
   // Live Cost Calculation via Domain Pricing Engine (DRY)
   const pricing = calculatePricingBreakdown({
@@ -195,7 +249,167 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
           </div>
         </div>
 
-        {/* 4. Flexible Payment Scheme Selection */}
+        {/* 4. Verifikasi Dokumen Identitas (KTP & SIM A) */}
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-blue-600" />
+              <span>Verifikasi Dokumen Identitas</span>
+            </h3>
+            <span className="text-[11px] font-semibold text-slate-500">
+              Format: JPG, PNG, WEBP (Maks 5MB)
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Foto KTP */}
+            <div className={`p-4 rounded-2xl border transition-all ${
+              idCardPreview ? 'border-emerald-300 bg-emerald-50/30' : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span>Foto KTP Asli</span>
+                  <span className="text-rose-500 font-bold">*</span>
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
+                  Wajib
+                </span>
+              </div>
+
+              {idCardPreview ? (
+                <div className="space-y-2">
+                  <div className="relative rounded-xl overflow-hidden border border-emerald-200 aspect-video bg-black/5 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={idCardPreview}
+                      alt="Preview KTP"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeIdCard}
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors"
+                      title="Hapus foto"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-emerald-700 font-bold flex items-center gap-1 truncate max-w-[180px]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="truncate">{idCardFileName || 'KTP Terlampir'}</span>
+                    </span>
+                    <label className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer">
+                      Ganti
+                      <input
+                        type="file"
+                        name="idCardPhoto"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleIdCardChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-800">Pilih / Ambil Foto KTP</span>
+                  <span className="text-[11px] text-slate-400 mt-0.5">Tampak jelas & tidak buram</span>
+                  <input
+                    type="file"
+                    name="idCardPhoto"
+                    accept="image/jpeg,image/png,image/webp"
+                    required
+                    onChange={handleIdCardChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+
+            {/* Foto SIM A */}
+            <div className={`p-4 rounded-2xl border transition-all ${
+              driverLicPreview ? 'border-emerald-300 bg-emerald-50/30' : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                  <span>Foto SIM A</span>
+                  {!isWithDriver && <span className="text-rose-500 font-bold">*</span>}
+                </span>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  !isWithDriver ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
+                }`}>
+                  {!isWithDriver ? 'Wajib (Lepas Kunci)' : 'Opsional (Ada Supir)'}
+                </span>
+              </div>
+
+              {driverLicPreview ? (
+                <div className="space-y-2">
+                  <div className="relative rounded-xl overflow-hidden border border-emerald-200 aspect-video bg-black/5 flex items-center justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={driverLicPreview}
+                      alt="Preview SIM A"
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeDriverLic}
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors"
+                      title="Hapus foto"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="text-emerald-700 font-bold flex items-center gap-1 truncate max-w-[180px]">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span className="truncate">{driverLicFileName || 'SIM A Terlampir'}</span>
+                    </span>
+                    <label className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer">
+                      Ganti
+                      <input
+                        type="file"
+                        name="driverLicPhoto"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleDriverLicChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mb-2">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <span className="text-xs font-bold text-slate-800">Pilih / Ambil Foto SIM A</span>
+                  <span className="text-[11px] text-slate-400 mt-0.5">
+                    {!isWithDriver ? 'Wajib untuk sewa bawa sendiri' : 'Bisa dilewati jika pakai supir'}
+                  </span>
+                  <input
+                    type="file"
+                    name="driverLicPhoto"
+                    accept="image/jpeg,image/png,image/webp"
+                    required={!isWithDriver}
+                    onChange={handleDriverLicChange}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+          </div>
+
+          <p className="text-[11px] text-slate-500 bg-slate-100 p-2.5 rounded-xl flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+            <span>Dokumen identitas Anda dienkripsi aman dan hanya digunakan oleh tim AutoMax untuk verifikasi serah terima armada.</span>
+          </p>
+        </div>
+
+        {/* 5. Flexible Payment Scheme Selection */}
         <div className="space-y-3 pt-2">
           <label className="block text-xs font-bold text-slate-900 flex items-center justify-between">
             <span className="flex items-center gap-1.5">

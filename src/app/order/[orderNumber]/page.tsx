@@ -270,6 +270,46 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               )}
             </div>
 
+            {/* Attached Verification Documents */}
+            {(booking.idCardPhotoUrl || booking.driverLicPhotoUrl) && (
+              <div className="p-6 sm:p-8 border-t border-slate-100 bg-slate-50/50">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                  <span>Dokumen Verifikasi Identitas Terlampir</span>
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {booking.idCardPhotoUrl && (
+                    <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={booking.idCardPhotoUrl} alt="Foto KTP" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-slate-900 block">KTP Terverifikasi</span>
+                        <a href={booking.idCardPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
+                          Lihat Ukuran Penuh
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {booking.driverLicPhotoUrl && (
+                    <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={booking.driverLicPhotoUrl} alt="Foto SIM A" className="w-full h-full object-cover" />
+                      </div>
+                      <div>
+                        <span className="text-xs font-bold text-slate-900 block">SIM A Terverifikasi</span>
+                        <a href={booking.driverLicPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
+                          Lihat Ukuran Penuh
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Official Footer Note */}
             <div className="bg-slate-50 p-6 border-t border-slate-200 text-[11px] text-slate-500 text-center">
               AutoMax Car Rental • Pool: Jl. TB Simatupang No. 88, Cilandak, Jakarta Selatan • CS WhatsApp: +62 812-3456-7890

@@ -16,6 +16,9 @@ import {
   AlertTriangle,
   Cog,
   Wrench,
+  FileText,
+  X,
+  ExternalLink,
 } from 'lucide-react';
 import {
   updateBookingStatusAction,
@@ -35,6 +38,12 @@ export default function AdminDashboardClient({ cars, bookings, setting }: Props)
   const [isPending, startTransition] = useTransition();
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showAddCarModal, setShowAddCarModal] = useState(false);
+  const [selectedDocModal, setSelectedDocModal] = useState<{
+    orderNumber: string;
+    customerName: string;
+    idCardPhotoUrl?: string | null;
+    driverLicPhotoUrl?: string | null;
+  } | null>(null);
 
   const filteredBookings = bookings.filter((b) => {
     if (statusFilter === 'ALL') return true;
@@ -219,6 +228,22 @@ export default function AdminDashboardClient({ cars, bookings, setting }: Props)
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </Link>
+
+                          {(b.idCardPhotoUrl || b.driverLicPhotoUrl) && (
+                            <button
+                              type="button"
+                              onClick={() => setSelectedDocModal({
+                                orderNumber: b.orderNumber,
+                                customerName: b.customerName,
+                                idCardPhotoUrl: b.idCardPhotoUrl,
+                                driverLicPhotoUrl: b.driverLicPhotoUrl,
+                              })}
+                              className="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 text-blue-800 transition-colors"
+                              title="Lihat Dokumen KTP & SIM A"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                          )}
 
                           <a
                             href={`https://wa.me/${b.customerPhone.replace(/^0/, '62')}?text=Halo%20Kak%20${b.customerName},%20konfirmasi%20dari%20AutoMax%20Rental%20untuk%20pesanan%20${b.orderNumber}`}
@@ -541,6 +566,105 @@ export default function AdminDashboardClient({ cars, bookings, setting }: Props)
                 {isPending ? 'Menyimpan Unit...' : 'Simpan Mobil ke Katalog'}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal View Customer Identity Documents */}
+      {selectedDocModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div>
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-wider">Verifikasi Dokumen Identitas</span>
+                <h3 className="text-lg font-black text-slate-900">
+                  {selectedDocModal.customerName} ({selectedDocModal.orderNumber})
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedDocModal(null)}
+                className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* KTP */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Foto KTP Asli</span>
+                  {selectedDocModal.idCardPhotoUrl ? (
+                    <a
+                      href={selectedDocModal.idCardPhotoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <span>Buka Tab Baru</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="text-[11px] text-slate-400">Tidak ada</span>
+                  )}
+                </div>
+                <div className="rounded-2xl border border-slate-200 overflow-hidden aspect-video bg-slate-100 flex items-center justify-center">
+                  {selectedDocModal.idCardPhotoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedDocModal.idCardPhotoUrl}
+                      alt="Foto KTP"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs text-slate-400">Belum ada foto KTP</span>
+                  )}
+                </div>
+              </div>
+
+              {/* SIM A */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">Foto SIM A</span>
+                  {selectedDocModal.driverLicPhotoUrl ? (
+                    <a
+                      href={selectedDocModal.driverLicPhotoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <span>Buka Tab Baru</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <span className="text-[11px] text-slate-400">Tidak ada</span>
+                  )}
+                </div>
+                <div className="rounded-2xl border border-slate-200 overflow-hidden aspect-video bg-slate-100 flex items-center justify-center">
+                  {selectedDocModal.driverLicPhotoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedDocModal.driverLicPhotoUrl}
+                      alt="Foto SIM A"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-xs text-slate-400">Belum ada foto SIM A</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setSelectedDocModal(null)}
+                className="px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}

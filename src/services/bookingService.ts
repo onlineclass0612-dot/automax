@@ -78,6 +78,8 @@ export interface CreateBookingInput {
   customerPhone: string;
   customerEmail?: string;
   customerAddress?: string;
+  idCardPhotoUrl?: string;
+  driverLicPhotoUrl?: string;
   notes?: string;
 }
 
@@ -123,6 +125,8 @@ export async function createNewBooking(input: CreateBookingInput) {
         customerPhone: input.customerPhone,
         customerEmail: input.customerEmail,
         customerAddress: input.customerAddress,
+        idCardPhotoUrl: input.idCardPhotoUrl,
+        driverLicPhotoUrl: input.driverLicPhotoUrl,
         startDate: calc.startDate,
         endDate: calc.endDate,
         durationDays: calc.durationDays,
