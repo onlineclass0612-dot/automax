@@ -19,6 +19,7 @@ import {
   FileText,
   X,
   ExternalLink,
+  LogOut,
 } from 'lucide-react';
 import {
   updateBookingStatusAction,
@@ -26,6 +27,7 @@ import {
   addNewCarAction,
   updateSettingsAction,
 } from '@/app/actions/adminActions';
+import { logoutAdminAction } from '@/app/actions/adminAuthActions';
 
 interface Props {
   cars: any[];
@@ -109,6 +111,21 @@ export default function AdminDashboardClient({ cars, bookings, setting }: Props)
           >
             <Settings className="w-4 h-4 text-blue-600" />
             <span>Pengaturan</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              startTransition(async () => {
+                await logoutAdminAction();
+              });
+            }}
+            disabled={isPending}
+            className="px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-200 transition-all flex items-center gap-1.5 cursor-pointer ml-1"
+            title="Keluar dari akun admin"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Keluar</span>
           </button>
         </div>
       </div>

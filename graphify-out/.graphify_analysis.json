@@ -6,9 +6,6 @@
       "ref_lucide_react",
       "ref_next",
       "ref_react",
-      "src_app_admin_page",
-      "src_app_admin_page_adminpage",
-      "src_app_admin_page_dynamic",
       "src_app_cars_slug_page",
       "src_app_cars_slug_page_cardetailpage",
       "src_app_cars_slug_page_dynamic",
@@ -22,7 +19,6 @@
       "src_app_page",
       "src_app_page_dynamic",
       "src_app_page_homepage",
-      "src_components_bookingform",
       "src_components_bookingform_bookingform",
       "src_components_carcard",
       "src_components_carcard_carcard",
@@ -67,31 +63,29 @@
       "ref_typescript"
     ],
     "2": [
-      "ref_crypto",
-      "src_app_api_payment_mayar_webhook_route",
-      "src_app_api_payment_mayar_webhook_route_post",
-      "src_app_api_payment_simulate_confirm_route",
-      "src_app_api_payment_simulate_confirm_route_post",
-      "src_lib_prisma",
-      "src_lib_prisma_globalforprisma",
-      "src_lib_prisma_prisma",
-      "src_services_notificationservice",
-      "src_services_notificationservice_channels",
-      "src_services_notificationservice_dispatchnotification",
-      "src_services_notificationservice_notificationchannel",
-      "src_services_notificationservice_notificationchannel_isenabled",
-      "src_services_notificationservice_notificationchannel_send",
-      "src_services_notificationservice_notificationpayload",
-      "src_services_notificationservice_telegramnotificationchannel",
-      "src_services_notificationservice_telegramnotificationchannel_isenabled",
-      "src_services_notificationservice_telegramnotificationchannel_send",
-      "src_services_notificationservice_whatsapphelperchannel",
-      "src_services_notificationservice_whatsapphelperchannel_isenabled",
-      "src_services_notificationservice_whatsapphelperchannel_send",
-      "src_services_paymentledgerservice",
-      "src_services_paymentledgerservice_paymentprocessresult",
-      "src_services_paymentledgerservice_processpaymentparams",
-      "src_services_paymentledgerservice_recordbookingpayment"
+      "ref_fs",
+      "ref_path",
+      "src_app_actions_bookingactions",
+      "src_app_actions_bookingactions_saveuploadeddocument",
+      "src_app_actions_bookingactions_submitbookingaction",
+      "src_components_bookingform",
+      "src_lib_pricing",
+      "src_lib_pricing_calculatedurationdays",
+      "src_lib_pricing_calculatepricingbreakdown",
+      "src_lib_pricing_pricing_constants",
+      "src_lib_pricing_pricingbreakdownresult",
+      "src_lib_pricing_pricingcalculationinput",
+      "src_services_bookingservice",
+      "src_services_bookingservice_bookingcalculationinput",
+      "src_services_bookingservice_calculatebookingcost",
+      "src_services_bookingservice_createbookinginput",
+      "src_services_bookingservice_createnewbooking",
+      "src_services_bookingservice_generateordernumber",
+      "src_services_mayarservice",
+      "src_services_mayarservice_createmayarpayment",
+      "src_services_mayarservice_createpaymentparams",
+      "src_services_mayarservice_mayarpaymentresult",
+      "src_services_notificationservice_dispatchnotification"
     ],
     "3": [
       "tsconfig",
@@ -115,26 +109,50 @@
       "tsconfig_include"
     ],
     "4": [
-      "src_app_actions_bookingactions",
-      "src_app_actions_bookingactions_submitbookingaction",
-      "src_lib_pricing",
-      "src_lib_pricing_calculatedurationdays",
-      "src_lib_pricing_calculatepricingbreakdown",
-      "src_lib_pricing_pricing_constants",
-      "src_lib_pricing_pricingbreakdownresult",
-      "src_lib_pricing_pricingcalculationinput",
-      "src_services_bookingservice",
-      "src_services_bookingservice_bookingcalculationinput",
-      "src_services_bookingservice_calculatebookingcost",
-      "src_services_bookingservice_createbookinginput",
-      "src_services_bookingservice_createnewbooking",
-      "src_services_bookingservice_generateordernumber",
-      "src_services_mayarservice",
-      "src_services_mayarservice_createmayarpayment",
-      "src_services_mayarservice_createpaymentparams",
-      "src_services_mayarservice_mayarpaymentresult"
+      "src_app_actions_adminactions",
+      "src_app_actions_adminactions_addnewcaraction",
+      "src_app_actions_adminactions_adminloginaction",
+      "src_app_actions_adminactions_adminlogoutaction",
+      "src_app_actions_adminactions_updatebookingstatusaction",
+      "src_app_actions_adminactions_updatecarstatusaction",
+      "src_app_actions_adminactions_updatesettingsaction",
+      "src_app_actions_adminactions_verifyadminpermission",
+      "src_app_admin_page",
+      "src_app_admin_page_adminpage",
+      "src_app_admin_page_dynamic",
+      "src_components_admin_admindashboardclient",
+      "src_components_admin_admindashboardclient_admindashboardclient",
+      "src_components_admin_admindashboardclient_props"
     ],
     "5": [
+      "ref_crypto",
+      "src_app_api_payment_mayar_webhook_route",
+      "src_app_api_payment_mayar_webhook_route_post",
+      "src_app_api_payment_simulate_confirm_route",
+      "src_app_api_payment_simulate_confirm_route_post",
+      "src_lib_prisma",
+      "src_lib_prisma_globalforprisma",
+      "src_lib_prisma_prisma",
+      "src_services_paymentledgerservice",
+      "src_services_paymentledgerservice_paymentprocessresult",
+      "src_services_paymentledgerservice_processpaymentparams",
+      "src_services_paymentledgerservice_recordbookingpayment"
+    ],
+    "6": [
+      "src_services_notificationservice",
+      "src_services_notificationservice_channels",
+      "src_services_notificationservice_notificationchannel",
+      "src_services_notificationservice_notificationchannel_isenabled",
+      "src_services_notificationservice_notificationchannel_send",
+      "src_services_notificationservice_notificationpayload",
+      "src_services_notificationservice_telegramnotificationchannel",
+      "src_services_notificationservice_telegramnotificationchannel_isenabled",
+      "src_services_notificationservice_telegramnotificationchannel_send",
+      "src_services_notificationservice_whatsapphelperchannel",
+      "src_services_notificationservice_whatsapphelperchannel_isenabled",
+      "src_services_notificationservice_whatsapphelperchannel_send"
+    ],
+    "7": [
       "package_devdependencies",
       "package_devdependencies_babel_plugin_react_compiler",
       "package_devdependencies_eslint",
@@ -147,20 +165,7 @@
       "package_devdependencies_types_react_dom",
       "package_devdependencies_typescript"
     ],
-    "6": [
-      "src_app_actions_adminactions",
-      "src_app_actions_adminactions_addnewcaraction",
-      "src_app_actions_adminactions_adminloginaction",
-      "src_app_actions_adminactions_adminlogoutaction",
-      "src_app_actions_adminactions_updatebookingstatusaction",
-      "src_app_actions_adminactions_updatecarstatusaction",
-      "src_app_actions_adminactions_updatesettingsaction",
-      "src_app_actions_adminactions_verifyadminpermission",
-      "src_components_admin_admindashboardclient",
-      "src_components_admin_admindashboardclient_admindashboardclient",
-      "src_components_admin_admindashboardclient_props"
-    ],
-    "7": [
+    "8": [
       "package_dependencies",
       "package_dependencies_clsx",
       "package_dependencies_lucide_react",
@@ -170,7 +175,7 @@
       "package_dependencies_react_dom",
       "package_dependencies_tailwind_merge"
     ],
-    "8": [
+    "9": [
       "src_app_globals",
       "src_app_layout",
       "src_app_layout_geistmono",
@@ -181,15 +186,16 @@
     ]
   },
   "cohesion": {
-    "0": 0.16042780748663102,
+    "0": 0.16551724137931034,
     "1": 0.07407407407407407,
-    "2": 0.12333333333333334,
+    "2": 0.14624505928853754,
     "3": 0.10526315789473684,
-    "4": 0.16993464052287582,
-    "5": 0.18181818181818182,
-    "6": 0.4,
-    "7": 0.25,
-    "8": 0.2857142857142857
+    "4": 0.2967032967032967,
+    "5": 0.30303030303030304,
+    "6": 0.19696969696969696,
+    "7": 0.18181818181818182,
+    "8": 0.25,
+    "9": 0.2857142857142857
   },
   "gods": [
     {
@@ -220,12 +226,12 @@
     {
       "id": "src_components_footer_footer",
       "label": "Footer()",
-      "degree": 9
+      "degree": 8
     },
     {
       "id": "src_components_navbar_navbar",
       "label": "Navbar()",
-      "degree": 9
+      "degree": 8
     },
     {
       "id": "src_components_admin_admindashboardclient_admindashboardclient",
@@ -238,29 +244,29 @@
       "degree": 7
     },
     {
-      "id": "src_lib_pricing_calculatepricingbreakdown",
-      "label": "calculatePricingBreakdown()",
+      "id": "src_services_paymentledgerservice_recordbookingpayment",
+      "label": "recordBookingPayment()",
       "degree": 6
     }
   ],
   "surprises": [
     {
       "source": "AdminPage()",
-      "target": "AdminDashboardClient()",
+      "target": "Footer()",
       "source_files": [
         "src/app/admin/page.tsx",
-        "src/components/admin/AdminDashboardClient.tsx"
+        "src/components/Footer.tsx"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
       "why": "bridges separate communities"
     },
     {
-      "source": "BookingForm()",
-      "target": "submitBookingAction()",
+      "source": "AdminPage()",
+      "target": "Navbar()",
       "source_files": [
-        "src/components/BookingForm.tsx",
-        "src/app/actions/bookingActions.ts"
+        "src/app/admin/page.tsx",
+        "src/components/Navbar.tsx"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
@@ -289,11 +295,11 @@
       "why": "peripheral node `POST()` unexpectedly reaches hub `recordBookingPayment()`"
     },
     {
-      "source": "BookingForm()",
-      "target": "calculatePricingBreakdown()",
+      "source": "recordBookingPayment()",
+      "target": "dispatchNotification()",
       "source_files": [
-        "src/components/BookingForm.tsx",
-        "src/lib/pricing.ts"
+        "src/services/paymentLedgerService.ts",
+        "src/services/notificationService.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",

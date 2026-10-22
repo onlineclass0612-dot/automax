@@ -3,11 +3,17 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import AdminDashboardClient from '@/components/admin/AdminDashboardClient';
 import { prisma } from '@/lib/prisma';
+import { getAdminSession } from '@/services/adminAuthService';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-
 export default async function AdminPage() {
+  const session = await getAdminSession();
+  if (!session) {
+    redirect('/admin/login');
+  }
+
   const [cars, bookings, setting] = await Promise.all([
     prisma.car.findMany({ orderBy: { createdAt: 'desc' } }),
     prisma.booking.findMany({
