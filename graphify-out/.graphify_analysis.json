@@ -6,6 +6,9 @@
       "ref_lucide_react",
       "ref_next",
       "ref_react",
+      "src_app_admin_login_adminloginform",
+      "src_app_admin_page",
+      "src_app_admin_page_dynamic",
       "src_app_cars_slug_page",
       "src_app_cars_slug_page_cardetailpage",
       "src_app_cars_slug_page_dynamic",
@@ -88,6 +91,29 @@
       "src_services_notificationservice_dispatchnotification"
     ],
     "3": [
+      "ref_crypto",
+      "src_app_actions_adminauthactions",
+      "src_app_actions_adminauthactions_loginactionresult",
+      "src_app_actions_adminauthactions_loginadminaction",
+      "src_app_actions_adminauthactions_logoutadminaction",
+      "src_app_admin_login_adminloginform_adminloginform",
+      "src_app_admin_login_page",
+      "src_app_admin_login_page_adminloginpage",
+      "src_app_admin_login_page_dynamic",
+      "src_app_admin_page_adminpage",
+      "src_services_adminauthservice",
+      "src_services_adminauthservice_adminsessionpayload",
+      "src_services_adminauthservice_authenticateadmin",
+      "src_services_adminauthservice_clearadminsessioncookie",
+      "src_services_adminauthservice_createsessiontoken",
+      "src_services_adminauthservice_getadminsession",
+      "src_services_adminauthservice_getsecretkey",
+      "src_services_adminauthservice_hashpassword",
+      "src_services_adminauthservice_setadminsessioncookie",
+      "src_services_adminauthservice_verifypassword",
+      "src_services_adminauthservice_verifysessiontoken"
+    ],
+    "4": [
       "tsconfig",
       "tsconfig_compileroptions",
       "tsconfig_compileroptions_allowjs",
@@ -108,37 +134,7 @@
       "tsconfig_exclude",
       "tsconfig_include"
     ],
-    "4": [
-      "src_app_actions_adminactions",
-      "src_app_actions_adminactions_addnewcaraction",
-      "src_app_actions_adminactions_adminloginaction",
-      "src_app_actions_adminactions_adminlogoutaction",
-      "src_app_actions_adminactions_updatebookingstatusaction",
-      "src_app_actions_adminactions_updatecarstatusaction",
-      "src_app_actions_adminactions_updatesettingsaction",
-      "src_app_actions_adminactions_verifyadminpermission",
-      "src_app_admin_page",
-      "src_app_admin_page_adminpage",
-      "src_app_admin_page_dynamic",
-      "src_components_admin_admindashboardclient",
-      "src_components_admin_admindashboardclient_admindashboardclient",
-      "src_components_admin_admindashboardclient_props"
-    ],
     "5": [
-      "ref_crypto",
-      "src_app_api_payment_mayar_webhook_route",
-      "src_app_api_payment_mayar_webhook_route_post",
-      "src_app_api_payment_simulate_confirm_route",
-      "src_app_api_payment_simulate_confirm_route_post",
-      "src_lib_prisma",
-      "src_lib_prisma_globalforprisma",
-      "src_lib_prisma_prisma",
-      "src_services_paymentledgerservice",
-      "src_services_paymentledgerservice_paymentprocessresult",
-      "src_services_paymentledgerservice_processpaymentparams",
-      "src_services_paymentledgerservice_recordbookingpayment"
-    ],
-    "6": [
       "src_services_notificationservice",
       "src_services_notificationservice_channels",
       "src_services_notificationservice_notificationchannel",
@@ -152,7 +148,7 @@
       "src_services_notificationservice_whatsapphelperchannel_isenabled",
       "src_services_notificationservice_whatsapphelperchannel_send"
     ],
-    "7": [
+    "6": [
       "package_devdependencies",
       "package_devdependencies_babel_plugin_react_compiler",
       "package_devdependencies_eslint",
@@ -165,7 +161,33 @@
       "package_devdependencies_types_react_dom",
       "package_devdependencies_typescript"
     ],
+    "7": [
+      "src_app_actions_adminactions",
+      "src_app_actions_adminactions_addnewcaraction",
+      "src_app_actions_adminactions_adminloginaction",
+      "src_app_actions_adminactions_adminlogoutaction",
+      "src_app_actions_adminactions_updatebookingstatusaction",
+      "src_app_actions_adminactions_updatecarstatusaction",
+      "src_app_actions_adminactions_updatesettingsaction",
+      "src_app_actions_adminactions_verifyadminpermission",
+      "src_components_admin_admindashboardclient",
+      "src_components_admin_admindashboardclient_admindashboardclient",
+      "src_components_admin_admindashboardclient_props"
+    ],
     "8": [
+      "src_app_api_payment_mayar_webhook_route",
+      "src_app_api_payment_mayar_webhook_route_post",
+      "src_app_api_payment_simulate_confirm_route",
+      "src_app_api_payment_simulate_confirm_route_post",
+      "src_lib_prisma",
+      "src_lib_prisma_globalforprisma",
+      "src_lib_prisma_prisma",
+      "src_services_paymentledgerservice",
+      "src_services_paymentledgerservice_paymentprocessresult",
+      "src_services_paymentledgerservice_processpaymentparams",
+      "src_services_paymentledgerservice_recordbookingpayment"
+    ],
+    "9": [
       "package_dependencies",
       "package_dependencies_clsx",
       "package_dependencies_lucide_react",
@@ -175,7 +197,7 @@
       "package_dependencies_react_dom",
       "package_dependencies_tailwind_merge"
     ],
-    "9": [
+    "10": [
       "src_app_globals",
       "src_app_layout",
       "src_app_layout_geistmono",
@@ -186,56 +208,57 @@
     ]
   },
   "cohesion": {
-    "0": 0.16551724137931034,
+    "0": 0.15151515151515152,
     "1": 0.07407407407407407,
     "2": 0.14624505928853754,
-    "3": 0.10526315789473684,
-    "4": 0.2967032967032967,
-    "5": 0.30303030303030304,
-    "6": 0.19696969696969696,
-    "7": 0.18181818181818182,
-    "8": 0.25,
-    "9": 0.2857142857142857
+    "3": 0.16666666666666666,
+    "4": 0.10526315789473684,
+    "5": 0.19696969696969696,
+    "6": 0.18181818181818182,
+    "7": 0.4,
+    "8": 0.34545454545454546,
+    "9": 0.25,
+    "10": 0.2857142857142857
   },
   "gods": [
+    {
+      "id": "ref_next",
+      "label": "next",
+      "degree": 20
+    },
     {
       "id": "tsconfig_compileroptions",
       "label": "compilerOptions",
       "degree": 16
     },
     {
-      "id": "ref_next",
-      "label": "next",
-      "degree": 15
-    },
-    {
       "id": "ref_react",
       "label": "react",
-      "degree": 13
+      "degree": 15
     },
     {
       "id": "ref_lucide_react",
       "label": "lucide-react",
-      "degree": 12
+      "degree": 13
     },
     {
       "id": "src_lib_prisma_prisma",
       "label": "prisma",
-      "degree": 10
-    },
-    {
-      "id": "src_components_footer_footer",
-      "label": "Footer()",
-      "degree": 8
-    },
-    {
-      "id": "src_components_navbar_navbar",
-      "label": "Navbar()",
-      "degree": 8
+      "degree": 11
     },
     {
       "id": "src_components_admin_admindashboardclient_admindashboardclient",
       "label": "AdminDashboardClient()",
+      "degree": 8
+    },
+    {
+      "id": "src_components_footer_footer",
+      "label": "Footer()",
+      "degree": 7
+    },
+    {
+      "id": "src_components_navbar_navbar",
+      "label": "Navbar()",
       "degree": 7
     },
     {
@@ -244,12 +267,34 @@
       "degree": 7
     },
     {
-      "id": "src_services_paymentledgerservice_recordbookingpayment",
-      "label": "recordBookingPayment()",
+      "id": "src_lib_pricing_calculatepricingbreakdown",
+      "label": "calculatePricingBreakdown()",
       "degree": 6
     }
   ],
   "surprises": [
+    {
+      "source": "BookingForm()",
+      "target": "submitBookingAction()",
+      "source_files": [
+        "src/components/BookingForm.tsx",
+        "src/app/actions/bookingActions.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BookingForm()",
+      "target": "calculatePricingBreakdown()",
+      "source_files": [
+        "src/components/BookingForm.tsx",
+        "src/lib/pricing.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
     {
       "source": "AdminPage()",
       "target": "Footer()",
@@ -271,28 +316,6 @@
       "confidence": "EXTRACTED",
       "relation": "calls",
       "why": "bridges separate communities"
-    },
-    {
-      "source": "POST()",
-      "target": "recordBookingPayment()",
-      "source_files": [
-        "src/app/api/payment/mayar-webhook/route.ts",
-        "src/services/paymentLedgerService.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "peripheral node `POST()` unexpectedly reaches hub `recordBookingPayment()`"
-    },
-    {
-      "source": "POST()",
-      "target": "recordBookingPayment()",
-      "source_files": [
-        "src/app/api/payment/simulate-confirm/route.ts",
-        "src/services/paymentLedgerService.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "calls",
-      "why": "peripheral node `POST()` unexpectedly reaches hub `recordBookingPayment()`"
     },
     {
       "source": "recordBookingPayment()",

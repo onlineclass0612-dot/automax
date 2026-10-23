@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useRef } from 'react';
 import { CarItemProps } from './CarCard';
 import {
   Calendar,
@@ -22,6 +22,11 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Input & Element Refs for File Attachment & Auto-Scrolling
+  const idCardInputRef = useRef<HTMLInputElement>(null);
+  const driverLicInputRef = useRef<HTMLInputElement>(null);
+  const errorBannerRef = useRef<HTMLDivElement>(null);
+
   // Form states for instant live calculation
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -33,17 +38,38 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const [isWithDriver, setIsWithDriver] = useState(false);
   const [paymentType, setPaymentType] = useState<'DOWN_PAYMENT' | 'FULL_PAYMENT'>('DOWN_PAYMENT');
 
+  // Customer Information states
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
+
   // Document Upload States & Live Previews
   const [idCardPreview, setIdCardPreview] = useState<string | null>(null);
   const [driverLicPreview, setDriverLicPreview] = useState<string | null>(null);
   const [idCardFileName, setIdCardFileName] = useState<string | null>(null);
   const [driverLicFileName, setDriverLicFileName] = useState<string | null>(null);
 
+  // Auto-scroll utility: Smoothly scrolls to target field and focuses the input
+  const scrollToField = (elementId: string) => {
+    const el = document.getElementById(elementId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const input = el.querySelector('input, select, textarea') as HTMLElement | null;
+      if (input) {
+        input.focus({ preventScroll: true });
+      }
+    } else {
+      errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
+
   const handleIdCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         setErrorMessage('Ukuran file KTP melebihi 5MB');
+        scrollToField('field-id-card');
         return;
       }
       setIdCardFileName(file.name);
@@ -57,6 +83,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         setErrorMessage('Ukuran file SIM A melebihi 5MB');
+        scrollToField('field-driver-lic');
         return;
       }
       setDriverLicFileName(file.name);
@@ -68,11 +95,17 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const removeIdCard = () => {
     setIdCardPreview(null);
     setIdCardFileName(null);
+    if (idCardInputRef.current) {
+      idCardInputRef.current.value = '';
+    }
   };
 
   const removeDriverLic = () => {
     setDriverLicPreview(null);
     setDriverLicFileName(null);
+    if (driverLicInputRef.current) {
+      driverLicInputRef.current.value = '';
+    }
   };
 
   // Live Cost Calculation via Domain Pricing Engine (DRY)
@@ -87,6 +120,34 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMessage(null);
+
+    // 1. Client-side Validation with Automatic Smooth Scroll
+    if (!customerName.trim()) {
+      setErrorMessage('Nama Lengkap Sesuai KTP wajib diisi.');
+      scrollToField('field-customer-name');
+      return;
+    }
+
+    if (!customerPhone.trim()) {
+      setErrorMessage('Nomor WhatsApp Aktif wajib diisi.');
+      scrollToField('field-customer-phone');
+      return;
+    }
+
+    const hasIdCard = idCardInputRef.current?.files?.[0] || idCardPreview;
+    if (!hasIdCard) {
+      setErrorMessage('Anda wajib melampirkan foto KTP untuk verifikasi identitas penyewa.');
+      scrollToField('field-id-card');
+      return;
+    }
+
+    const hasDriverLic = driverLicInputRef.current?.files?.[0] || driverLicPreview;
+    if (!isWithDriver && !hasDriverLic) {
+      setErrorMessage('Untuk layanan Lepas Kunci (Bawa Sendiri), Anda wajib melampirkan foto SIM A aktif.');
+      scrollToField('field-driver-lic');
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
     formData.set('isWithDriver', String(isWithDriver));
     formData.set('paymentType', paymentType);
@@ -95,6 +156,18 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
       const res = await submitBookingAction(formData);
       if (res?.error) {
         setErrorMessage(res.error);
+        const err = res.error.toLowerCase();
+        if (err.includes('ktp')) {
+          scrollToField('field-id-card');
+        } else if (err.includes('sim')) {
+          scrollToField('field-driver-lic');
+        } else if (err.includes('nama')) {
+          scrollToField('field-customer-name');
+        } else if (err.includes('whatsapp') || err.includes('nomor') || err.includes('telepon')) {
+          scrollToField('field-customer-phone');
+        } else {
+          errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
     });
   };
@@ -111,7 +184,10 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
       </div>
 
       {errorMessage && (
-        <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-3">
+        <div
+          ref={errorBannerRef}
+          className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start gap-3 shadow-sm animate-pulse"
+        >
           <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
           <span>{errorMessage}</span>
         </div>
@@ -120,9 +196,27 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
       <form onSubmit={handleSubmit} className="space-y-6">
         <input type="hidden" name="carId" value={car.id} />
 
+        {/* Hidden Permanent File Inputs (Never unmounted by React state changes) */}
+        <input
+          ref={idCardInputRef}
+          type="file"
+          name="idCardPhoto"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleIdCardChange}
+          className="hidden"
+        />
+        <input
+          ref={driverLicInputRef}
+          type="file"
+          name="driverLicPhoto"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleDriverLicChange}
+          className="hidden"
+        />
+
         {/* 1. Date Range Picker */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
+          <div id="field-start-date">
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-600" />
               <span>Tanggal Mulai Sewa</span>
@@ -146,7 +240,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
             />
           </div>
 
-          <div>
+          <div id="field-end-date">
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-blue-600" />
               <span>Tanggal Selesai Sewa</span>
@@ -195,7 +289,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
         {/* 3. Customer Info */}
         <div className="space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Data Diri Penyewa</h3>
-          <div>
+          <div id="field-customer-name">
             <label className="block text-xs font-bold text-slate-700 mb-1">Nama Lengkap Sesuai KTP *</label>
             <div className="relative">
               <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -203,6 +297,8 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                 type="text"
                 name="customerName"
                 required
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
                 placeholder="Contoh: Budi Santoso"
                 className="w-full text-xs sm:text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -210,7 +306,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+            <div id="field-customer-phone">
               <label className="block text-xs font-bold text-slate-700 mb-1">Nomor WhatsApp Aktif *</label>
               <div className="relative">
                 <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
@@ -218,30 +314,36 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                   type="tel"
                   name="customerPhone"
                   required
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="081234567890"
                   className="w-full text-xs sm:text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            <div>
+            <div id="field-customer-email">
               <label className="block text-xs font-bold text-slate-700 mb-1">Email (Opsional untuk Invoice)</label>
               <input
                 type="email"
                 name="customerEmail"
+                value={customerEmail}
+                onChange={(e) => setCustomerEmail(e.target.value)}
                 placeholder="budi@gmail.com"
                 className="w-full text-xs sm:text-sm px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
-          <div>
+          <div id="field-customer-address">
             <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Penjemputan / Catatan</label>
             <div className="relative">
               <MapPin className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
               <input
                 type="text"
                 name="customerAddress"
+                value={customerAddress}
+                onChange={(e) => setCustomerAddress(e.target.value)}
                 placeholder="Contoh: Ambil di Pool / Antar ke Bandara Soetta T3"
                 className="w-full text-xs sm:text-sm pl-10 pr-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -263,9 +365,14 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Foto KTP */}
-            <div className={`p-4 rounded-2xl border transition-all ${
-              idCardPreview ? 'border-emerald-300 bg-emerald-50/30' : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
-            }`}>
+            <div
+              id="field-id-card"
+              className={`p-4 rounded-2xl border transition-all ${
+                idCardPreview
+                  ? 'border-emerald-300 bg-emerald-50/30'
+                  : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+              }`}
+            >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                   <span>Foto KTP Asli</span>
@@ -288,7 +395,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                     <button
                       type="button"
                       onClick={removeIdCard}
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
                       title="Hapus foto"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -299,49 +406,48 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span className="truncate">{idCardFileName || 'KTP Terlampir'}</span>
                     </span>
-                    <label className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer">
-                      Ganti
-                      <input
-                        type="file"
-                        name="idCardPhoto"
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={handleIdCardChange}
-                        className="hidden"
-                      />
-                    </label>
+                    <button
+                      type="button"
+                      onClick={() => idCardInputRef.current?.click()}
+                      className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer"
+                    >
+                      Ganti Foto
+                    </button>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center">
+                <div
+                  onClick={() => idCardInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center"
+                >
                   <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2">
                     <Upload className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-bold text-slate-800">Pilih / Ambil Foto KTP</span>
                   <span className="text-[11px] text-slate-400 mt-0.5">Tampak jelas & tidak buram</span>
-                  <input
-                    type="file"
-                    name="idCardPhoto"
-                    accept="image/jpeg,image/png,image/webp"
-                    required
-                    onChange={handleIdCardChange}
-                    className="hidden"
-                  />
-                </label>
+                </div>
               )}
             </div>
 
             {/* Foto SIM A */}
-            <div className={`p-4 rounded-2xl border transition-all ${
-              driverLicPreview ? 'border-emerald-300 bg-emerald-50/30' : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
-            }`}>
+            <div
+              id="field-driver-lic"
+              className={`p-4 rounded-2xl border transition-all ${
+                driverLicPreview
+                  ? 'border-emerald-300 bg-emerald-50/30'
+                  : 'border-dashed border-slate-300 bg-slate-50/60 hover:bg-slate-50'
+              }`}
+            >
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                   <span>Foto SIM A</span>
                   {!isWithDriver && <span className="text-rose-500 font-bold">*</span>}
                 </span>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                  !isWithDriver ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
-                }`}>
+                <span
+                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    !isWithDriver ? 'bg-amber-100 text-amber-800' : 'bg-slate-200 text-slate-700'
+                  }`}
+                >
                   {!isWithDriver ? 'Wajib (Lepas Kunci)' : 'Opsional (Ada Supir)'}
                 </span>
               </div>
@@ -358,7 +464,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                     <button
                       type="button"
                       onClick={removeDriverLic}
-                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors"
+                      className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white transition-colors cursor-pointer"
                       title="Hapus foto"
                     >
                       <X className="w-3.5 h-3.5" />
@@ -369,20 +475,20 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                       <span className="truncate">{driverLicFileName || 'SIM A Terlampir'}</span>
                     </span>
-                    <label className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer">
-                      Ganti
-                      <input
-                        type="file"
-                        name="driverLicPhoto"
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={handleDriverLicChange}
-                        className="hidden"
-                      />
-                    </label>
+                    <button
+                      type="button"
+                      onClick={() => driverLicInputRef.current?.click()}
+                      className="text-blue-600 hover:text-blue-700 font-bold cursor-pointer"
+                    >
+                      Ganti Foto
+                    </button>
                   </div>
                 </div>
               ) : (
-                <label className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center">
+                <div
+                  onClick={() => driverLicInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center py-5 px-3 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-white transition-all text-center"
+                >
                   <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mb-2">
                     <Upload className="w-5 h-5" />
                   </div>
@@ -390,15 +496,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
                   <span className="text-[11px] text-slate-400 mt-0.5">
                     {!isWithDriver ? 'Wajib untuk sewa bawa sendiri' : 'Bisa dilewati jika pakai supir'}
                   </span>
-                  <input
-                    type="file"
-                    name="driverLicPhoto"
-                    accept="image/jpeg,image/png,image/webp"
-                    required={!isWithDriver}
-                    onChange={handleDriverLicChange}
-                    className="hidden"
-                  />
-                </label>
+                </div>
               )}
             </div>
           </div>
