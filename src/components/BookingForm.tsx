@@ -50,7 +50,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
   const [idCardFileName, setIdCardFileName] = useState<string | null>(null);
   const [driverLicFileName, setDriverLicFileName] = useState<string | null>(null);
 
-  // Auto-scroll utility: Smoothly scrolls to target field and focuses the input
+  // Auto-scroll utility: Smoothly scrolls to target field, adds highlight ring, and focuses the input
   const scrollToField = (elementId: string) => {
     const el = document.getElementById(elementId);
     if (el) {
@@ -59,6 +59,10 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
       if (input) {
         input.focus({ preventScroll: true });
       }
+      el.classList.add('ring-2', 'ring-rose-500', 'transition-all');
+      setTimeout(() => {
+        el.classList.remove('ring-2', 'ring-rose-500');
+      }, 2500);
     } else {
       errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -122,6 +126,18 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
     setErrorMessage(null);
 
     // 1. Client-side Validation with Automatic Smooth Scroll
+    if (!startDate) {
+      setErrorMessage('Tanggal Mulai Sewa wajib dipilih.');
+      scrollToField('field-start-date');
+      return;
+    }
+
+    if (!endDate) {
+      setErrorMessage('Tanggal Selesai Sewa wajib dipilih.');
+      scrollToField('field-end-date');
+      return;
+    }
+
     if (!customerName.trim()) {
       setErrorMessage('Nama Lengkap Sesuai KTP wajib diisi.');
       scrollToField('field-customer-name');
@@ -153,21 +169,34 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
     formData.set('paymentType', paymentType);
 
     startTransition(async () => {
-      const res = await submitBookingAction(formData);
-      if (res?.error) {
-        setErrorMessage(res.error);
-        const err = res.error.toLowerCase();
-        if (err.includes('ktp')) {
-          scrollToField('field-id-card');
-        } else if (err.includes('sim')) {
-          scrollToField('field-driver-lic');
-        } else if (err.includes('nama')) {
-          scrollToField('field-customer-name');
-        } else if (err.includes('whatsapp') || err.includes('nomor') || err.includes('telepon')) {
-          scrollToField('field-customer-phone');
-        } else {
-          errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      try {
+        const res = await submitBookingAction(formData);
+        if (res?.error) {
+          setErrorMessage(res.error);
+          const err = res.error.toLowerCase();
+          if (err.includes('ktp')) {
+            scrollToField('field-id-card');
+          } else if (err.includes('sim')) {
+            scrollToField('field-driver-lic');
+          } else if (err.includes('nama')) {
+            scrollToField('field-customer-name');
+          } else if (err.includes('whatsapp') || err.includes('nomor') || err.includes('telepon')) {
+            scrollToField('field-customer-phone');
+          } else {
+            errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
         }
+
+        if (res?.redirectUrl) {
+          window.location.href = res.redirectUrl;
+        }
+      } catch (err: any) {
+        console.error('[Booking Submit Exception]', err);
+        setErrorMessage(
+          err.message || 'Gagal memproses pemesanan. Silakan periksa koneksi atau ukuran foto dan coba kembali.'
+        );
+        errorBannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     });
   };
@@ -193,7 +222,7 @@ export default function BookingForm({ car }: { car: CarItemProps }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} noValidate className="space-y-6">
         <input type="hidden" name="carId" value={car.id} />
 
         {/* Hidden Permanent File Inputs (Never unmounted by React state changes) */}

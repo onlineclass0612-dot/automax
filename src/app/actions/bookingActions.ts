@@ -87,10 +87,15 @@ export async function submitBookingAction(formData: FormData) {
     return { error: err.message || 'Terjadi kesalahan saat memproses pesanan' };
   }
 
-  // Redirect to order tracking or Mayar payment URL
-  if (result.paymentUrl && result.paymentUrl.startsWith('http')) {
-    redirect(result.paymentUrl);
-  } else {
-    redirect(`/order/${result.booking.orderNumber}`);
-  }
+  // Return redirect destination URL for reliable client-side navigation
+  const redirectUrl =
+    result.paymentUrl && result.paymentUrl.startsWith('http')
+      ? result.paymentUrl
+      : `/order/${result.booking.orderNumber}`;
+
+  return {
+    success: true,
+    redirectUrl,
+    orderNumber: result.booking.orderNumber,
+  };
 }
