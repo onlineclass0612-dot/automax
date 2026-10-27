@@ -21,7 +21,13 @@ export interface MayarPaymentResult {
 
 export async function createMayarPayment(params: CreatePaymentParams): Promise<MayarPaymentResult> {
   const apiKey = process.env.MAYAR_API_KEY;
-  const baseUrl = process.env.MAYAR_BASE_URL || 'https://api.mayar.id/hl/v1';
+  const baseUrl = process.env.MAYAR_BASE_URL || 'https://api.mayar.io/hl/v1';
+
+  console.log(
+    `[Mayar Service] Creating payment at ${baseUrl}/payment/create for #${params.orderNumber} (API Key: ${
+      apiKey ? apiKey.slice(0, 15) + '...' : 'EMPTY'
+    })`
+  );
 
   // If no API key configured yet, provide a seamless sandbox simulator URL
   if (!apiKey || apiKey.trim() === '') {
