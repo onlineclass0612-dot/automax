@@ -51,6 +51,11 @@ export async function calculateBookingCost(input: BookingCalculationInput) {
     paymentType: input.paymentType,
   });
 
+  const todayStr = new Date().toISOString().slice(0, 10);
+  if (input.startDate < todayStr) {
+    throw new Error('Tanggal mulai sewa tidak boleh tanggal di masa lalu.');
+  }
+
   const start = new Date(`${input.startDate}T09:00:00+07:00`);
   const end = new Date(`${input.endDate}T09:00:00+07:00`);
 
@@ -92,15 +97,24 @@ export async function createNewBooking(input: CreateBookingInput) {
     paymentType: input.paymentType,
   });
 
-  // PREVENT RACE CONDITIONS:
+  // PREVENT RACE CONDITIONS & DOUBLE BOOKING:
   // Collision check and booking creation executed atomically inside a transaction
   const booking = await prisma.$transaction(async (tx) => {
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
     const existingCollision = await tx.booking.findFirst({
       where: {
         carId: input.carId,
-        status: { in: ['DP_PAID', 'PAID_IN_FULL', 'ACTIVE'] },
         OR: [
+          // 1. Confirmed paid or active bookings
           {
+            status: { in: ['DP_PAID', 'PAID_IN_FULL', 'ACTIVE'] },
+            startDate: { lte: calc.endDate },
+            endDate: { gte: calc.startDate },
+          },
+          // 2. Active checkout lock (customer currently paying at gateway within 30 min)
+          {
+            status: 'PENDING_PAYMENT',
+            createdAt: { gte: thirtyMinutesAgo },
             startDate: { lte: calc.endDate },
             endDate: { gte: calc.startDate },
           },

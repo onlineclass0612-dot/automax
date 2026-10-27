@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { getAdminSession } from '@/services/adminAuthService';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -16,6 +17,7 @@ import {
   Calendar,
   AlertCircle,
   Car,
+  Lock,
 } from 'lucide-react';
 import OrderActionsClient from './OrderActionsClient';
 
@@ -26,10 +28,28 @@ interface Props {
 
 export const dynamic = 'force-dynamic';
 
+function maskPhone(phone: string): string {
+  if (!phone || phone.length <= 6) return phone || '';
+  const start = phone.slice(0, 4);
+  const end = phone.slice(-3);
+  return `${start}****${end}`;
+}
+
+function maskEmail(email?: string | null): string {
+  if (!email || !email.includes('@')) return email || '';
+  const [user, domain] = email.split('@');
+  const visible = user.slice(0, 2);
+  return `${visible}***@${domain}`;
+}
 
 export default async function OrderTrackingPage({ params, searchParams }: Props) {
   const { orderNumber } = await params;
   const { simulated_payment } = await searchParams;
+
+  const adminSession = await getAdminSession();
+  const isAdmin = Boolean(adminSession);
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  const showSimulation = isDevelopment || isAdmin;
 
   const booking = await prisma.booking.findUnique({
     where: { orderNumber },
@@ -80,11 +100,11 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               ← Kembali ke Beranda
             </Link>
 
-            <OrderActionsClient orderNumber={booking.orderNumber} />
+            <OrderActionsClient orderNumber={booking.orderNumber} showSimulation={showSimulation} />
           </div>
 
-          {/* Sandbox Simulation Helper Banner (Only when pending) */}
-          {isPending && (
+          {/* Sandbox Simulation Helper Banner (Only in Dev or for Admin) */}
+          {showSimulation && isPending && (
             <div className="no-print mb-6 p-4 rounded-2xl bg-blue-50 border border-blue-200 text-blue-900 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
@@ -178,8 +198,14 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               <div>
                 <span className="font-bold text-slate-400 uppercase tracking-wider block mb-2">Data Penyewa</span>
                 <p className="text-sm font-bold text-slate-900">{booking.customerName}</p>
-                <p className="text-slate-600 font-mono mt-0.5">WhatsApp: {booking.customerPhone}</p>
-                {booking.customerEmail && <p className="text-slate-600">{booking.customerEmail}</p>}
+                <p className="text-slate-600 font-mono mt-0.5">
+                  WhatsApp: {isAdmin ? booking.customerPhone : maskPhone(booking.customerPhone)}
+                </p>
+                {booking.customerEmail && (
+                  <p className="text-slate-600">
+                    Email: {isAdmin ? booking.customerEmail : maskEmail(booking.customerEmail)}
+                  </p>
+                )}
                 {booking.customerAddress && (
                   <p className="text-slate-600 mt-2 flex items-start gap-1">
                     <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
@@ -270,43 +296,58 @@ export default async function OrderTrackingPage({ params, searchParams }: Props)
               )}
             </div>
 
-            {/* Attached Verification Documents */}
+            {/* Attached Verification Documents (Privacy Protected) */}
             {(booking.idCardPhotoUrl || booking.driverLicPhotoUrl) && (
               <div className="p-6 sm:p-8 border-t border-slate-100 bg-slate-50/50">
                 <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Dokumen Verifikasi Identitas Terlampir</span>
+                  <span>Dokumen Verifikasi Identitas</span>
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {booking.idCardPhotoUrl && (
-                    <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-                      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={booking.idCardPhotoUrl} alt="Foto KTP" className="w-full h-full object-cover" />
+
+                {isAdmin ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {booking.idCardPhotoUrl && (
+                      <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                        <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={booking.idCardPhotoUrl} alt="Foto KTP" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-slate-900 block">KTP Penyewa</span>
+                          <a href={booking.idCardPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
+                            Lihat Dokumen Asli (Admin)
+                          </a>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-900 block">KTP Terverifikasi</span>
-                        <a href={booking.idCardPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
-                          Lihat Ukuran Penuh
-                        </a>
+                    )}
+                    {booking.driverLicPhotoUrl && (
+                      <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
+                        <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={booking.driverLicPhotoUrl} alt="Foto SIM A" className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <span className="text-xs font-bold text-slate-900 block">SIM A Penyewa</span>
+                          <a href={booking.driverLicPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
+                            Lihat Dokumen Asli (Admin)
+                          </a>
+                        </div>
                       </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3">
+                    <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <span className="text-xs font-bold text-emerald-900 block">
+                        Dokumen Identitas Telah Terverifikasi Aman
+                      </span>
+                      <span className="text-[11px] text-emerald-700">
+                        Foto KTP/SIM A tersimpan secara terenkripsi untuk perlindungan privasi data pribadi (UU PDP No. 27 Tahun 2022).
+                      </span>
                     </div>
-                  )}
-                  {booking.driverLicPhotoUrl && (
-                    <div className="p-3 bg-white rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-                      <div className="w-16 h-12 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={booking.driverLicPhotoUrl} alt="Foto SIM A" className="w-full h-full object-cover" />
-                      </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-900 block">SIM A Terverifikasi</span>
-                        <a href={booking.driverLicPhotoUrl} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline">
-                          Lihat Ukuran Penuh
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             )}
 

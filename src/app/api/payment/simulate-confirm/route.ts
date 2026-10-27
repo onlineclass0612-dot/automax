@@ -1,9 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { recordBookingPayment } from '@/services/paymentLedgerService';
+import { getAdminSession } from '@/services/adminAuthService';
 
 export async function POST(req: NextRequest) {
   try {
+    // Defensive Security: Prevent public payment spoofing in production
+    if (process.env.NODE_ENV === 'production') {
+      const adminSession = await getAdminSession();
+      if (!adminSession) {
+        return NextResponse.json(
+          { error: 'Akses ditolak: Endpoint simulasi hanya diizinkan untuk Admin terverifikasi.' },
+          { status: 403 }
+        );
+      }
+    }
+
     const { orderNumber, paymentType } = await req.json();
 
     const booking = await prisma.booking.findUnique({

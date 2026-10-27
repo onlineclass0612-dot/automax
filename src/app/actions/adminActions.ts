@@ -2,53 +2,21 @@
 
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { getAdminSession, clearAdminSessionCookie } from '@/services/adminAuthService';
 
 /**
- * Defensive Security: Verify that the caller has admin permissions
+ * Defensive Security: Verify that the caller has a valid, cryptographically signed admin session
  */
 async function verifyAdminPermission() {
-  const cookieStore = await cookies();
-  const sessionToken = cookieStore.get('automax_admin_token')?.value;
-  const adminSecret = process.env.ADMIN_SECRET || 'automax_secret_key_2026';
-
-  // In production, enforce valid session token
-  if (process.env.NODE_ENV === 'production') {
-    if (!sessionToken || sessionToken !== adminSecret) {
-      throw new Error('Akses ditolak: Anda harus terotentikasi sebagai Admin AutoMax.');
-    }
+  const session = await getAdminSession();
+  if (!session) {
+    throw new Error('Akses ditolak: Anda harus terotentikasi sebagai Admin AutoMax.');
   }
-}
-
-export async function adminLoginAction(password: string) {
-  const adminSecret = process.env.ADMIN_SECRET || 'automax_secret_key_2026';
-  
-  // Verify against database demo admin or ADMIN_SECRET
-  const admin = await prisma.adminUser.findFirst({
-    where: { email: 'admin@automax.id' },
-  });
-
-  const isValid = password === adminSecret || password === (admin?.password || 'password123');
-
-  if (!isValid) {
-    return { error: 'Password admin tidak valid.' };
-  }
-
-  const cookieStore = await cookies();
-  cookieStore.set('automax_admin_token', adminSecret, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-    path: '/',
-  });
-
-  return { success: true };
+  return session;
 }
 
 export async function adminLogoutAction() {
-  const cookieStore = await cookies();
-  cookieStore.delete('automax_admin_token');
+  await clearAdminSessionCookie();
   revalidatePath('/admin');
   return { success: true };
 }

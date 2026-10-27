@@ -10,8 +10,14 @@ async function saveUploadedDocument(file: File | null, prefix: string): Promise<
     return undefined;
   }
 
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-  if (!allowedTypes.includes(file.type)) {
+  const allowedTypes: Record<string, string> = {
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/png': 'png',
+    'image/webp': 'webp',
+  };
+
+  if (!allowedTypes[file.type]) {
     throw new Error(`Format foto ${prefix.toUpperCase()} harus JPG, PNG, atau WEBP.`);
   }
 
@@ -23,9 +29,25 @@ async function saveUploadedDocument(file: File | null, prefix: string): Promise<
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const rawExt = file.name.split('.').pop() || 'jpg';
-  const cleanExt = rawExt.toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-  const fileName = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${cleanExt}`;
+  // Defensive Security: Verify Image Magic Bytes (prevent MIME spoofing / Stored XSS)
+  const isJpeg = buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+  const isPng =
+    buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47;
+  const isWebp =
+    buffer.length > 12 &&
+    buffer[0] === 0x52 &&
+    buffer[1] === 0x49 &&
+    buffer[2] === 0x46 &&
+    buffer[3] === 0x46 &&
+    buffer.subarray(8, 12).toString('ascii') === 'WEBP';
+
+  if (!isJpeg && !isPng && !isWebp) {
+    throw new Error(`File foto ${prefix.toUpperCase()} bukan file gambar yang valid.`);
+  }
+
+  // Strictly enforce safe extension from verified whitelist, never trust client-provided file name
+  const safeExt = allowedTypes[file.type] || 'jpg';
+  const fileName = `${prefix}_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${safeExt}`;
 
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'documents');
   await fs.mkdir(uploadDir, { recursive: true });

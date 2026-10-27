@@ -4,7 +4,12 @@ import React, { useState, useTransition } from 'react';
 import { Printer, Phone, CheckCircle, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
-export default function OrderActionsClient({ orderNumber }: { orderNumber: string }) {
+interface Props {
+  orderNumber: string;
+  showSimulation?: boolean;
+}
+
+export default function OrderActionsClient({ orderNumber, showSimulation = false }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -31,26 +36,30 @@ export default function OrderActionsClient({ orderNumber }: { orderNumber: strin
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {/* Sandbox Simulation Dropdown / Buttons */}
-      <button
-        onClick={() => handleSimulatePayment('DOWN_PAYMENT')}
-        disabled={isPending}
-        className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm flex items-center gap-1 transition-all"
-        title="Simulasi bayar DP 30% untuk testing sandbox"
-      >
-        <Sparkles className="w-3.5 h-3.5" />
-        <span>{isPending ? 'Memproses...' : 'Simulasi Bayar DP 30%'}</span>
-      </button>
+      {/* Sandbox Simulation Dropdown / Buttons (Hidden in production for non-admin) */}
+      {showSimulation && (
+        <>
+          <button
+            onClick={() => handleSimulatePayment('DOWN_PAYMENT')}
+            disabled={isPending}
+            className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-sm flex items-center gap-1 transition-all"
+            title="Simulasi bayar DP 30% untuk testing sandbox"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>{isPending ? 'Memproses...' : 'Simulasi Bayar DP 30%'}</span>
+          </button>
 
-      <button
-        onClick={() => handleSimulatePayment('FULL_PAYMENT')}
-        disabled={isPending}
-        className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm flex items-center gap-1 transition-all"
-        title="Simulasi bayar Lunas 100% untuk testing sandbox"
-      >
-        <CheckCircle className="w-3.5 h-3.5" />
-        <span>{isPending ? 'Memproses...' : 'Simulasi Bayar Lunas'}</span>
-      </button>
+          <button
+            onClick={() => handleSimulatePayment('FULL_PAYMENT')}
+            disabled={isPending}
+            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm flex items-center gap-1 transition-all"
+            title="Simulasi bayar Lunas 100% untuk testing sandbox"
+          >
+            <CheckCircle className="w-3.5 h-3.5" />
+            <span>{isPending ? 'Memproses...' : 'Simulasi Bayar Lunas'}</span>
+          </button>
+        </>
+      )}
 
       {/* Print PDF Button */}
       <button

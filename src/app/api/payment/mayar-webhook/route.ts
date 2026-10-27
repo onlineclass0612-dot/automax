@@ -14,19 +14,42 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON payload' }, { status: 400 });
     }
 
-    // Defensive Security: Webhook Signature Verification (when secret configured in production)
+    // Defensive Security: Webhook Authentication & Signature Verification
     const webhookSecret = process.env.MAYAR_WEBHOOK_SECRET;
     const incomingSignature = req.headers.get('x-mayar-signature') || req.headers.get('signature');
+    const incomingToken =
+      req.headers.get('x-mayar-token') ||
+      req.headers.get('x-callback-token') ||
+      req.headers.get('authorization')?.replace('Bearer ', '');
 
-    if (webhookSecret && incomingSignature) {
-      const computedSignature = crypto
-        .createHmac('sha256', webhookSecret)
-        .update(rawText)
-        .digest('hex');
+    if (webhookSecret && process.env.NODE_ENV === 'production') {
+      let isVerified = false;
 
-      if (computedSignature !== incomingSignature) {
-        console.warn('[Mayar Webhook] Invalid signature rejected.');
-        return NextResponse.json({ error: 'Signature verification failed' }, { status: 401 });
+      // 1. Check raw token match
+      if (incomingToken && incomingToken === webhookSecret) {
+        isVerified = true;
+      }
+
+      // 2. Check HMAC-SHA256 signature match
+      if (!isVerified && incomingSignature) {
+        const computedSignature = crypto
+          .createHmac('sha256', webhookSecret)
+          .update(rawText)
+          .digest('hex');
+
+        if (
+          incomingSignature.length === computedSignature.length &&
+          crypto.timingSafeEqual(Buffer.from(computedSignature), Buffer.from(incomingSignature))
+        ) {
+          isVerified = true;
+        }
+      }
+
+      if (!isVerified) {
+        console.warn(
+          '[Mayar Webhook] Unauthorized webhook attempt rejected (missing or invalid signature/token).'
+        );
+        return NextResponse.json({ error: 'Signature / Token verification failed' }, { status: 401 });
       }
     }
 
