@@ -48,11 +48,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Ignored non-success event' });
     }
 
-    // Identify orderNumber from description or transactionId
-    const description = paymentData.description || '';
-    const match = description.match(/#INV-\d{4}-[A-Z0-9]+/i) || description.match(/INV-\d{4}-[A-Z0-9]+/i);
-    const orderNumber = match ? match[0].replace('#', '') : null;
-    const amountPaid = Number(paymentData.amount || paymentData.gross_amount || 0);
+    // Identify orderNumber robustly from rawText or description fields
+    const description = paymentData.productDescription || paymentData.description || '';
+    const match = rawText.match(/INV-\d{4}-[A-Z0-9]+/i);
+    const orderNumber = match ? match[0].toUpperCase() : null;
+    const amountPaid = Number(
+      paymentData.amount || paymentData.paymentLinkAmount || paymentData.gross_amount || 0
+    );
 
     let booking = null;
 
@@ -62,7 +64,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const transactionId = String(paymentData.id || paymentData.transaction_id || `TXN_${Date.now()}`);
+    const transactionId = String(
+      paymentData.transactionId || paymentData.id || paymentData.transaction_id || `TXN_${Date.now()}`
+    );
 
     if (!booking && transactionId) {
       const paymentRecord = await prisma.payment.findFirst({
@@ -76,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!booking) {
-      console.warn('[Mayar Webhook] Booking not found for incoming webhook.');
+      console.warn(`[Mayar Webhook] Booking #${orderNumber || 'UNKNOWN'} not found for incoming webhook.`);
       return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
     }
 
@@ -86,7 +90,7 @@ export async function POST(req: NextRequest) {
       transactionId,
       amount: amountPaid > 0 ? amountPaid : booking.depositRequired,
       gateway: 'MAYAR',
-      method: paymentData.payment_method || 'QRIS',
+      method: paymentData.paymentMethod || paymentData.payment_method || 'QRIS',
       rawPayload: rawText,
     });
 
